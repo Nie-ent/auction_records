@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String          @id @default(cuid())
+  phoneNumber String          @unique
+  records     AuctionRecord[]
+  createdAt   DateTime        @default(now())
+}
+
+model AuctionRecord {
+  id           String   @id @default(cuid())
+  date         DateTime
+  itemName     String?
+  imageUrl     String
+  amount       Int
+  price        Float
+  exchangeRate Float    @default(0.23)
+  soldPrice    Float?
+  depositThb   Float?
+  feeThb       Float?
+  purchasedAt  DateTime @default(now())
+  receivedAt   DateTime?
+  soldAt       DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id])
+  
+  services     Json?    // Stores array of { name: string, price: number }
+}
