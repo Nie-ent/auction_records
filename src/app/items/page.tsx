@@ -10,13 +10,13 @@ export default async function ItemsPage() {
   const records = await getAuctionRecords()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 pb-8">
+    <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 pb-8">
       <Toaster position="top-center" toastOptions={{ duration: 4000, style: { borderRadius: '1rem', background: '#fff', color: '#333' } }} />
       <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        
+
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 tracking-tight flex items-center gap-3">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 tracking-tight flex items-center gap-3">
               <PackageSearch className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
               รายการสินค้าทั้งหมด
             </h1>

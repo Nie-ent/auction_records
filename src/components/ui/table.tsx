@@ -1,10 +1,10 @@
 "use client"
 
 import { format } from 'date-fns'
-import { deleteAuctionRecord, updateAuctionRecordSoldPrice } from '@/app/actions/auction'
+import { updateAuctionRecordSoldPrice } from '@/app/actions/auction'
 import { useTransition, useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { Trash2, Edit3, X, Check } from 'lucide-react'
+import { Edit3, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 type AuctionRecord = {
@@ -58,7 +58,7 @@ export default function AuctionRecordTable({ records }: { records: AuctionRecord
               {groupedRecords[dateKey].length} รายการ
             </span>
           </h3>
-          
+
           <div className="w-full overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-lg bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md">
             {/* Smooth mobile scroll wrapper */}
             <div className="w-full overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
@@ -87,7 +87,7 @@ export default function AuctionRecordTable({ records }: { records: AuctionRecord
 function TableRow({ record }: { record: AuctionRecord }) {
   const [isPending, startTransition] = useTransition()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  
+
   // Image Modal state
   const [showImageModal, setShowImageModal] = useState(false)
 
@@ -106,25 +106,12 @@ function TableRow({ record }: { record: AuctionRecord }) {
   const [editPurchasedAt, setEditPurchasedAt] = useState(record.purchasedAt ? new Date(record.purchasedAt).toISOString().split('T')[0] : '')
   const [editReceivedAt, setEditReceivedAt] = useState(record.receivedAt ? new Date(record.receivedAt).toISOString().split('T')[0] : '')
   const [editSoldAt, setEditSoldAt] = useState(record.soldAt ? new Date(record.soldAt).toISOString().split('T')[0] : '')
-  const [editServices, setEditServices] = useState<{name: string, price: number}[]>(Array.isArray(record.services) ? record.services : [])
+  const [editServices, setEditServices] = useState<{ name: string, price: number }[]>(Array.isArray(record.services) ? record.services : [])
 
-  // Sync deposit input when toggled in edit modal
-  useEffect(() => {
-    if (editIsDeposit && editPrice > 0 && !editDepositThb) {
-      setEditDepositThb(((editPrice * editExchangeRate) / 2).toFixed(2))
-    }
-  }, [editPrice, editExchangeRate, editIsDeposit, editDepositThb])
 
-  // Auto-calculate fee when editing price
-  useEffect(() => {
-    if (editPrice > 0) {
-      setEditFeeThb(Number((editPrice * 0.03 + 40).toFixed(2)))
-    } else {
-      setEditFeeThb(40)
-    }
-  }, [editPrice])
 
   const [mounted, setMounted] = useState(false)
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), [])
 
   const handleDelete = () => {
@@ -134,6 +121,7 @@ function TableRow({ record }: { record: AuctionRecord }) {
         await deleteAuctionRecord(record.id)
         toast.success("ลบรายการสำเร็จ!")
       } catch (e) {
+        console.error(e)
         toast.error("ลบรายการไม่สำเร็จ")
       }
     })
@@ -146,6 +134,7 @@ function TableRow({ record }: { record: AuctionRecord }) {
         setIsEditingSoldPrice(false)
         toast.success("อัปเดตราคาขายสำเร็จ!")
       } catch (e) {
+        console.error(e)
         toast.error("อัปเดตราคาขายไม่สำเร็จ")
       }
     })
@@ -170,25 +159,26 @@ function TableRow({ record }: { record: AuctionRecord }) {
         setShowEditModal(false)
         toast.success("อัปเดตข้อมูลสำเร็จ!")
       } catch (e) {
+        console.error(e)
         toast.error("อัปเดตข้อมูลไม่สำเร็จ")
       }
     })
   }
 
   const rawThb = record.price * record.exchangeRate
-  const servicesList = (Array.isArray(record.services) ? record.services : []) as {name: string, price: number}[]
+  const servicesList = (Array.isArray(record.services) ? record.services : []) as { name: string, price: number }[]
   const servicesTotal = servicesList.reduce((sum, s) => sum + Number(s.price), 0)
   const estimatedThb = rawThb + (record.feeThb || 0) + servicesTotal
 
   return (
     <>
-      <tr 
+      <tr
         className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 transition-colors group cursor-pointer"
         onClick={() => setShowEditModal(true)}
       >
         <td className="px-2 py-2 sm:px-4 sm:py-3 whitespace-nowrap w-24">
           <div className="flex flex-col items-center gap-2">
-            <div 
+            <div
               className="w-12 h-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 overflow-hidden shadow-inner ring-1 ring-black/5 dark:ring-white/10 hover:opacity-80 transition-opacity"
               onClick={(e) => {
                 e.stopPropagation()
@@ -244,8 +234,8 @@ function TableRow({ record }: { record: AuctionRecord }) {
           <div className="flex flex-col">
             <div className="flex items-center gap-2 group/edit cursor-pointer" onClick={(e) => { e.stopPropagation(); setIsEditingSoldPrice(true); }}>
               <span className={`font-medium ${record.soldPrice ? 'text-green-600 dark:text-green-400' : 'text-zinc-400 italic'}`}>
-                {record.soldPrice 
-                  ? new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }).format(record.soldPrice) 
+                {record.soldPrice
+                  ? new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }).format(record.soldPrice)
                   : 'ยังไม่ขาย'}
               </span>
               <button
@@ -255,7 +245,7 @@ function TableRow({ record }: { record: AuctionRecord }) {
                 <Edit3 className="w-3.5 h-3.5" />
               </button>
             </div>
-            
+
             {/* Show Profit if sold */}
             {record.soldPrice && (
               <div className={`text-[10px] sm:text-xs mt-1 font-medium ${record.soldPrice - estimatedThb >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
@@ -324,7 +314,14 @@ function TableRow({ record }: { record: AuctionRecord }) {
                     step="0.01"
                     required
                     value={editPrice || ''}
-                    onChange={(e) => setEditPrice(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => {
+                      const newPrice = parseFloat(e.target.value) || 0;
+                      setEditPrice(newPrice);
+                      setEditFeeThb(newPrice > 0 ? Number((newPrice * 0.03 + 40).toFixed(2)) : 40);
+                      if (editIsDeposit && newPrice > 0 && !editDepositThb) {
+                        setEditDepositThb(((newPrice * editExchangeRate) / 2).toFixed(2));
+                      }
+                    }}
                     className="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white"
                   />
                 </div>
@@ -335,7 +332,13 @@ function TableRow({ record }: { record: AuctionRecord }) {
                     step="0.0001"
                     required
                     value={editExchangeRate || ''}
-                    onChange={(e) => setEditExchangeRate(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => {
+                      const newRate = parseFloat(e.target.value) || 0;
+                      setEditExchangeRate(newRate);
+                      if (editIsDeposit && editPrice > 0 && !editDepositThb) {
+                        setEditDepositThb(((editPrice * newRate) / 2).toFixed(2));
+                      }
+                    }}
                     className="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white"
                   />
                 </div>
@@ -349,8 +352,13 @@ function TableRow({ record }: { record: AuctionRecord }) {
                       id={`editDeposit-${record.id}`}
                       checked={editIsDeposit}
                       onChange={(e) => {
-                        setEditIsDeposit(e.target.checked)
-                        if (!e.target.checked) setEditDepositThb('')
+                        const checked = e.target.checked;
+                        setEditIsDeposit(checked)
+                        if (!checked) {
+                          setEditDepositThb('')
+                        } else if (editPrice > 0 && !editDepositThb) {
+                          setEditDepositThb(((editPrice * editExchangeRate) / 2).toFixed(2));
+                        }
                       }}
                       className="w-4 h-4 text-indigo-600 rounded border-zinc-300 focus:ring-indigo-500"
                     />
@@ -396,7 +404,7 @@ function TableRow({ record }: { record: AuctionRecord }) {
                     + เพิ่มบริการ
                   </button>
                 </div>
-                
+
                 {editServices.length > 0 && (
                   <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
                     {editServices.map((srv, idx) => (
@@ -513,21 +521,21 @@ function TableRow({ record }: { record: AuctionRecord }) {
 
       {/* Image Fullscreen Modal */}
       {mounted && showImageModal && createPortal(
-        <div 
+        <div
           className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md transition-opacity"
           onClick={() => setShowImageModal(false)}
         >
           <div className="relative w-full max-w-5xl h-full max-h-[90vh] flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
-            <button 
+            <button
               onClick={() => setShowImageModal(false)}
               className="absolute top-4 right-4 z-50 p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src={record.imageUrl} 
-              alt="Enlarged Item" 
+            <img
+              src={record.imageUrl}
+              alt="Enlarged Item"
               className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
@@ -544,7 +552,7 @@ function TableRow({ record }: { record: AuctionRecord }) {
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
               ใส่ยอด 0 บาทหากต้องการยกเลิกสถานะขายแล้ว
             </p>
-            
+
             <input
               type="number"
               step="0.01"

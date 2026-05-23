@@ -43,24 +43,10 @@ export default function AuctionRecordForm() {
   // Services
   const [services, setServices] = useState<ServiceEntry[]>([])
 
-  // Auto-calculate 50% deposit if checked
-  useEffect(() => {
-    if (isDeposit && price > 0) {
-      const half = (price * exchangeRate) / 2
-      setDepositThb(half.toFixed(2))
-    }
-  }, [price, exchangeRate, isDeposit])
 
-  // Auto-calculate fee: 0.03 of price + 40 THB service fee
-  useEffect(() => {
-    if (price > 0) {
-      setFeeThb(Number((price * 0.03 + 40).toFixed(2)))
-    } else {
-      setFeeThb(40)
-    }
-  }, [price])
 
   const [mounted, setMounted] = useState(false)
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), [])
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -90,7 +76,7 @@ export default function AuctionRecordForm() {
         const fileExt = selectedFile.name.split('.').pop()
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
         
-        const { data, error } = await supabase.storage
+        const { error } = await supabase.storage
           .from('images')
           .upload(`auctions/${fileName}`, selectedFile)
 
@@ -268,7 +254,14 @@ export default function AuctionRecordForm() {
                       required
                       placeholder="0.00"
                       value={price || ''}
-                      onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
+                      onChange={(e) => {
+                        const newPrice = parseFloat(e.target.value) || 0;
+                        setPrice(newPrice);
+                        setFeeThb(newPrice > 0 ? Number((newPrice * 0.03 + 40).toFixed(2)) : 40);
+                        if (isDeposit && newPrice > 0) {
+                          setDepositThb(((newPrice * exchangeRate) / 2).toFixed(2));
+                        }
+                      }}
                       className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-zinc-900 dark:text-white"
                     />
                   </div>
@@ -284,7 +277,13 @@ export default function AuctionRecordForm() {
                       step="0.0001"
                       required
                       value={exchangeRate}
-                      onChange={(e) => setExchangeRate(parseFloat(e.target.value) || 0)}
+                      onChange={(e) => {
+                        const newRate = parseFloat(e.target.value) || 0;
+                        setExchangeRate(newRate);
+                        if (isDeposit && price > 0) {
+                          setDepositThb(((price * newRate) / 2).toFixed(2));
+                        }
+                      }}
                       className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-zinc-900 dark:text-white"
                     />
                   </div>
@@ -298,8 +297,13 @@ export default function AuctionRecordForm() {
                         id="isDeposit"
                         checked={isDeposit}
                         onChange={(e) => {
-                          setIsDeposit(e.target.checked)
-                          if (!e.target.checked) setDepositThb('')
+                          const checked = e.target.checked;
+                          setIsDeposit(checked)
+                          if (!checked) {
+                            setDepositThb('')
+                          } else if (price > 0) {
+                            setDepositThb(((price * exchangeRate) / 2).toFixed(2));
+                          }
                         }}
                         className="w-4 h-4 text-indigo-600 rounded border-zinc-300 focus:ring-indigo-500"
                       />
