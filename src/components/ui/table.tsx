@@ -283,35 +283,35 @@ function TableRow({ record }: { record: AuctionRecord }) {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">วันที่ซื้อ</label>
                   <input
                     type="date"
                     required
                     value={editPurchasedAt}
                     onChange={(e) => setEditPurchasedAt(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white"
+                    className="w-full max-w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">วันที่ได้รับ <span className="text-xs text-zinc-400">(ถ้ามี)</span></label>
                   <input
                     type="date"
                     value={editReceivedAt}
                     onChange={(e) => setEditReceivedAt(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white"
+                    className="w-full max-w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">วันที่ขาย <span className="text-xs text-zinc-400">(ถ้ามี)</span></label>
                   <input
                     type="date"
                     value={editSoldAt}
                     onChange={(e) => setEditSoldAt(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white"
+                    className="w-full max-w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white"
                   />
                 </div>
               </div>
