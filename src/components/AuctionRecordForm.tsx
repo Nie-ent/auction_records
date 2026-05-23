@@ -166,8 +166,8 @@ export default function AuctionRecordForm() {
             
             <div className="p-6">
               <form ref={formRef} onSubmit={handleInitialSubmit} className="flex flex-col gap-5">
-                <div className="space-y-4">
-                  <div>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1">
                     <label htmlFor="purchasedAt" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                       วันที่สั่งซื้อ
                     </label>
@@ -178,6 +178,19 @@ export default function AuctionRecordForm() {
                       value={purchasedAt}
                       onChange={(e) => setPurchasedAt(e.target.value)}
                       required
+                      className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-zinc-900 dark:text-white"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label htmlFor="receivedAt" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                      วันที่ได้รับสินค้า <span className="text-xs text-zinc-400">(ถ้ามี)</span>
+                    </label>
+                    <input
+                      type="date"
+                      name="receivedAt"
+                      id="receivedAt"
+                      value={receivedAt}
+                      onChange={(e) => setReceivedAt(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-zinc-900 dark:text-white"
                     />
                   </div>
@@ -210,7 +223,8 @@ export default function AuctionRecordForm() {
                     )}
                   </div>
                 </div>
-                <div className="mb-4">
+                
+                <div>
                   <label htmlFor="itemName" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
                     ชื่อสินค้า <span className="text-zinc-400 font-normal text-xs">(ไม่บังคับ)</span>
                   </label>
@@ -261,7 +275,7 @@ export default function AuctionRecordForm() {
 
                   <div className="flex-1">
                     <label htmlFor="exchangeRate" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                      อัตราแลกเปลี่ยน
+                      เรท
                     </label>
                     <input
                       type="number"
@@ -271,19 +285,6 @@ export default function AuctionRecordForm() {
                       required
                       value={exchangeRate}
                       onChange={(e) => setExchangeRate(parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-zinc-900 dark:text-white"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <label htmlFor="receivedAt" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                      วันที่ได้รับสินค้า <span className="text-xs text-zinc-400">(ถ้ามี)</span>
-                    </label>
-                    <input
-                      type="date"
-                      name="receivedAt"
-                      id="receivedAt"
-                      value={receivedAt}
-                      onChange={(e) => setReceivedAt(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-zinc-900 dark:text-white"
                     />
                   </div>
